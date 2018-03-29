@@ -1,0 +1,28 @@
+{% from "show_links.html" import show_links %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    {% block title %}
+    {% endblock %}
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{ url_for('static',filename='css/bootstrap.min.css') }}" rel="stylesheet">
+
+    <link href="{{ url_for('static',filename='css/theme.css') }}" rel="stylesheet">
+
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    {% block jqueryscripts %}
+    {% endblock %}
+
+  </head>
+
+    <body>
+    {% block content %}
+    {% endblock %}
+    </body>
+</html>
