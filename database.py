@@ -2,9 +2,10 @@ import sqlite3
 from flask import g
 import psycopg2
 from psycopg2.extras import DictCursor
+import os
 
 def connect_db():
-    conn = psycopg2.connect('postgres://Subhayan:root123@159.65.148.192:5432/Subhayan',cursor_factory=DictCursor)
+    conn = psycopg2.connect(os.environ.get('DATABASE_URL'),cursor_factory=DictCursor)
     conn.autocommit = True
     sql = conn.cursor()
     return conn,sql
