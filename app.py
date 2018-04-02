@@ -1,5 +1,5 @@
 from flask import Flask,render_template,g,request,session,redirect,url_for
-from database import get_db
+from database import get_db,init_db
 from werkzeug.security import generate_password_hash,check_password_hash
 import os
 
@@ -8,23 +8,29 @@ app.config['SECRET_KEY'] = os.urandom(24)
 
 @app.teardown_appcontext
 def close_db(error):
-    if hasattr(g, 'sqlite_db'):
-        g.sqlite_db.close()
+    if hasattr(g, 'postgres_db_con'):
+        g.postgres_db_con.close()
+    if hasattr(g,'postgres_db_cur'):
+        g.postgres_db_cur.close()
+
+@app.before_first_request
+def create_tables():
+    init_db()
 
 def get_current_user():
     user_result = None
     if 'username' in session:
         user = session['username']
         db = get_db()
-        user_cur = db.execute('select id,name,password,expert,admin from users where name = ?',[user])
-        user_result = user_cur.fetchone()
+        db.execute('select id,name,password,expert,admin from users where name = %s',(user,))
+        user_result = db.fetchone()
     return user_result
 
 @app.route('/')
 def index():
     user_details = get_current_user()
     db = get_db()
-    results_cur = db.execute('''
+    db.execute('''
                                 select questions.id as id,questions.question_text as question,
                                 askers.name as asked_by,experts.name as expert 
                                 from questions,users as askers,
@@ -33,7 +39,7 @@ def index():
                                 and questions.expert_id = experts.id
                                 and questions.answer_text is not null
                                 ''')
-    results = results_cur.fetchall()
+    results = db.fetchall()
     return render_template('home.html',user=user_details,results=results)
 
 @app.route('/register',methods=["GET","POST"])

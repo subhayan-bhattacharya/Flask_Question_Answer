@@ -1,5 +1,5 @@
 create table users(
-  id INTEGER primary key autoincrement,
+  id serial primary key,
   name text not NULL,
   password text not NULL,
   expert boolean not NULL ,
@@ -7,7 +7,7 @@ create table users(
 );
 
 create table questions(
-  id INTEGER primary key autoincrement,
+  id serial primary key,
   question_text text not NULL ,
   answer_text text,
   asked_by_id INTEGER not NULL ,
