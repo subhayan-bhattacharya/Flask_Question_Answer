@@ -13,9 +13,9 @@ def close_db(error):
     if hasattr(g,'postgres_db_cur'):
         g.postgres_db_cur.close()
 
-@app.before_first_request
-def create_tables():
-    init_db()
+# @app.before_first_request
+#def create_tables():
+    #init_db()
 
 def get_current_user():
     user_result = None
