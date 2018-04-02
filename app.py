@@ -58,7 +58,7 @@ def register():
             session['username'] = username
             if username == 'admin':
                 db.execute('update users set admin = True where name = %s', ('admin',))
-            return redirect(url_for('index'))
+            return redirect(url_for('index'),user=user_details)
         else:
             error_message = "User already exists!"
 
@@ -81,7 +81,7 @@ def login():
             returned_password = user_result['password']
             if check_password_hash(returned_password,password):
                 session['username'] = user_result['name']
-                return redirect(url_for('index'))
+                return redirect(url_for('index'),user=user_details)
             else:
                 pass_error_message = "Passwords don't match"
         else:
@@ -111,7 +111,7 @@ def answer(question_id):
     if request.method == "POST":
         answer = request.form['answer']
         db.execute('update questions set answer_text = %s where id =%s',(answer,question_id,))
-        return redirect(url_for('unanswered'))
+        return redirect(url_for('unanswered'),user=user_details)
 
     if user_details:
         if user_details['expert']:
@@ -119,7 +119,7 @@ def answer(question_id):
             question = db.fetchone()
             return render_template('answer.html',user=user_details,question=question)
         else:
-            return redirect(url_for('index'))
+            return redirect(url_for('index'),user=user_details)
     else:
         return redirect(url_for('login'))
 
@@ -132,7 +132,7 @@ def ask():
         expert_id = request.form['expert']
         ask_by_id = user_details['id']
         db.execute('insert into questions(question_text,asked_by_id,expert_id) values(%s,%s,%s)',(question,ask_by_id,expert_id,))
-        return redirect(url_for('index'))
+        return redirect(url_for('index'),user=user_details)
 
     if user_details:
         db.execute('select id,name from users where expert = True and admin = False')
@@ -155,7 +155,7 @@ def unanswered():
             unanswered_questions = db.fetchall()
             return render_template('unanswered.html',user=user_details,questions=unanswered_questions)
         else:
-            return redirect(url_for('index'))
+            return redirect(url_for('index'),user=user_details)
     else:
         return redirect(url_for('login'))
 
@@ -169,7 +169,7 @@ def users():
             users = db.fetchall()
             return render_template('users.html',user=user_details,users=users)
         else:
-            return redirect(url_for('index'))
+            return redirect(url_for('index'),user=user_details)
     else:
         return redirect(url_for('login'))
 
@@ -180,9 +180,9 @@ def promote(user_id):
         if user_details['admin']:
             db = get_db()
             db.execute('update users set expert = case when expert = True then False else True end where id = %s',(user_id,))
-            return redirect(url_for('users'))
+            return redirect(url_for('users'),user=user_details)
         else:
-            return redirect(url_for('index'))
+            return redirect(url_for('index'),user=user_details)
     else:
         return redirect(url_for('login'))
 
