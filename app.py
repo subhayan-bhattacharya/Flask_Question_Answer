@@ -52,7 +52,7 @@ def register():
         password = request.form["password"]
         db.execute('select count(*) as count from users where name = %s',(username,))
         no = db.fetchone()
-        if no == 0:
+        if no['count'] == 0:
             hashed_password = generate_password_hash(password,method='sha256')
             db.execute('insert into users(name,password,expert,admin) values(%s,%s,%s,%s)',(username,hashed_password,'0','0',))
             session['username'] = username
