@@ -3,6 +3,11 @@ from flask import g
 import psycopg2
 from psycopg2.extras import DictCursor
 import os
+import sys
+
+SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
+sql_file = os.path.join(SITE_ROOT,'schema.sql')
+
 
 def connect_db():
     conn = psycopg2.connect(os.environ.get('DATABASE_URL','postgres://test:test123@localhost:5432/test'),cursor_factory=DictCursor)
@@ -20,7 +25,7 @@ def get_db():
 
 def init_db():
     db = connect_db()
-    db[1].execute(open('schema.sql','r').read())
+    db[1].execute(open(sql_file,'r').read())
     db[1].close()
     db[0].close()
 
