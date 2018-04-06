@@ -13,9 +13,9 @@ def close_db(error):
     if hasattr(g,'postgres_db_cur'):
         g.postgres_db_cur.close()
 
-# @app.before_first_request
-#def create_tables():
-    #init_db()
+@app.before_first_request
+def create_tables():
+    init_db()
 
 def get_current_user():
     user_result = None
@@ -58,7 +58,7 @@ def register():
             session['username'] = username
             if username == 'admin':
                 db.execute('update users set admin = True where name = %s', ('admin',))
-            return redirect(url_for('index'),user=user_details)
+            return redirect(url_for('index'))
         else:
             error_message = "User already exists!"
 
@@ -81,7 +81,7 @@ def login():
             returned_password = user_result['password']
             if check_password_hash(returned_password,password):
                 session['username'] = user_result['name']
-                return redirect(url_for('index'),user=user_details)
+                return redirect(url_for('index'))
             else:
                 pass_error_message = "Passwords don't match"
         else:
@@ -111,7 +111,7 @@ def answer(question_id):
     if request.method == "POST":
         answer = request.form['answer']
         db.execute('update questions set answer_text = %s where id =%s',(answer,question_id,))
-        return redirect(url_for('unanswered'),user=user_details)
+        return redirect(url_for('unanswered'))
 
     if user_details:
         if user_details['expert']:
@@ -132,7 +132,7 @@ def ask():
         expert_id = request.form['expert']
         ask_by_id = user_details['id']
         db.execute('insert into questions(question_text,asked_by_id,expert_id) values(%s,%s,%s)',(question,ask_by_id,expert_id,))
-        return redirect(url_for('index'),user=user_details)
+        return redirect(url_for('index'))
 
     if user_details:
         db.execute('select id,name from users where expert = True and admin = False')
@@ -180,9 +180,9 @@ def promote(user_id):
         if user_details['admin']:
             db = get_db()
             db.execute('update users set expert = case when expert = True then False else True end where id = %s',(user_id,))
-            return redirect(url_for('users'),user=user_details)
+            return redirect(url_for('users'))
         else:
-            return redirect(url_for('index'),user=user_details)
+            return redirect(url_for('index'))
     else:
         return redirect(url_for('login'))
 
@@ -193,4 +193,4 @@ def logout():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0',debug=True)

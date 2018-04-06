@@ -5,7 +5,7 @@ from psycopg2.extras import DictCursor
 import os
 
 def connect_db():
-    conn = psycopg2.connect(os.environ.get('DATABASE_URL'),cursor_factory=DictCursor)
+    conn = psycopg2.connect(os.environ.get('DATABASE_URL','postgres://test:test123@localhost:5432/test'),cursor_factory=DictCursor)
     conn.autocommit = True
     sql = conn.cursor()
     return conn,sql

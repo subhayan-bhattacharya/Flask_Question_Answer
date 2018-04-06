@@ -1,4 +1,4 @@
-create table users(
+create table IF NOT EXISTS users(
   id serial primary key,
   name text not NULL,
   password text not NULL,
@@ -6,7 +6,7 @@ create table users(
   admin boolean not NULL
 );
 
-create table questions(
+create table IF NOT EXISTS questions(
   id serial primary key,
   question_text text not NULL ,
   answer_text text,
